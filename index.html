@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💸 Сучасний фінансовий трекер</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background: #f2f4f8;
+    color: #2c3e50;
+    transition: background 0.3s;
+  }
+
+  header {
+    text-align: center;
+    padding: 40px 20px 20px 20px;
+    font-size: 2em;
+    font-weight: 700;
+  }
+
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 20px 40px 20px;
+  }
+
+  input, button {
+    width: 100%;
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border: none;
+    font-size: 1em;
+    outline: none;
+  }
+
+  input {
+    background: #e6eaf0;
+  }
+
+  button {
+    background: #2980b9;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #1c5980;
+  }
+
+  #image {
+    width: 100%;
+    border-radius: 15px;
+    margin: 15px 0;
+    display: block;
+  }
+
+  #expensesList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  #expensesList li {
+    padding: 10px 0;
+    border-bottom: 1px solid #dfe3e8;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .balance {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 700;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 15px;
+    background: #e6eaf0;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+</style>
+</head>
+<body>
+
+<header>💸 Мій фінансовий трекер</header>
+<div class="container">
+
+  <!-- 1. Реєстрація -->
+  <div id="registrationCard">
+    <input type="email" id="email" placeholder="Введіть email для збереження витрат" required>
+    <button id="registerBtn">Зареєструватися</button>
+  </div>
+
+  <!-- 2. Основні блоки -->
+  <div id="mainContent" class="hidden">
+
+    <!-- Поточний баланс -->
+    <input type="number" id="currentBalance" placeholder="Введіть баланс (₴)" value="0">
+    <button id="updateBalance">Оновити баланс</button>
+
+    <!-- Додавання витрати -->
+    <button id="addExpenseButton">Додати витрату</button>
+    <button id="removeExpenseButton">Видалити останню</button>
+
+    <!-- Список витрат -->
+    <ul id="expensesList"></ul>
+
+    <!-- Підсумковий баланс -->
+    <div class="balance" id="styledBalance">Баланс: ₴0</div>
+
+    <!-- Картинка -->
+    <img id="image" src="https://placekitten.com/500/300" alt="Фінанси">
+    <button id="changeImage">Змінити картинку</button>
+
+    <!-- Зміна фону -->
+    <button id="changeBackgroundColor">Змінити фон</button>
+
+  </div>
+</div>
+
+<script>
+  // 1️⃣ Реєстрація
+  document.getElementById("registerBtn").onclick = function() {
+    const email = document.getElementById("email").value;
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!pattern.test(email)) {
+      alert("Невірний формат електронної пошти!");
+    } else {
+      alert("Реєстрація успішна! Email: " + email);
+      document.getElementById("registrationCard").classList.add("hidden");
+      document.getElementById("mainContent").classList.remove("hidden");
+    }
+  };
+
+  // 2️⃣ Поточний баланс
+  function updateBalance() {
+    const balance = parseFloat(document.getElementById("currentBalance").value)||0;
+    updateSummary(balance);
+  }
+  document.getElementById("updateBalance").onclick = updateBalance;
+
+  // 3️⃣ Додавання витрати
+  document.getElementById("addExpenseButton").onclick = function() {
+    const name = prompt("Назва витрати:");
+    const amount = parseFloat(prompt("Сума витрати (₴):"));
+    if(name && !isNaN(amount)) {
+      const li = document.createElement("li");
+      li.innerHTML = `${name} <span>₴${amount.toFixed(2)}</span>`;
+      li.dataset.amount = amount;
+      document.getElementById("expensesList").appendChild(li);
+      updateBalance();
+    }
+  };
+
+  // 4️⃣ Видалення витрати
+  document.getElementById("removeExpenseButton").onclick = function() {
+    const list = document.getElementById("expensesList");
+    if(list.lastChild) list.removeChild(list.lastChild);
+    updateBalance();
+  };
+
+  // 5️⃣ Підсумковий баланс
+  function updateSummary(baseBalance) {
+    const totalExpenses = Array.from(document.querySelectorAll("#expensesList li")).reduce((sum,li)=>sum+parseFloat(li.dataset.amount),0);
+    const final = baseBalance - totalExpenses;
+    document.getElementById("styledBalance").innerText = "Баланс: ₴" + final.toFixed(2);
+  }
+
+  // 6️⃣ Картинка
+  document.getElementById("changeImage").onclick = function() {
+    const img = document.getElementById("image");
+    img.src = img.src.includes("kitten") ? "https://placebear.com/500/300" : "https://placekitten.com/500/300";
+  };
+
+  // 7️⃣ Зміна фону
+  document.getElementById("changeBackgroundColor").onclick = function() {
+    const colors = ["#f2f4f8","#dfe6e9","#f0f9ff","#e8f8f5","#fff3e0"];
+    document.body.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+  };
+</script>
+
+</body>
+</html>
